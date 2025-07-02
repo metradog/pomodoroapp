@@ -9,11 +9,11 @@ class PomodoroTimer extends Component
 {
     public $timeRemaining;
     public $isRunning = false;
-    public $interval = 30; // Valor por defecto
-    public $timerId;
+    public $interval = 30; // Valor por defecto (30 minutos)
     public $completedPomodoros = 0;
 
-    protected $listeners = ['timerFinished' => 'handleTimerFinished'];
+    // En Livewire 3 ya no es necesario $listeners de esta forma
+    // Los eventos se manejan directamente con $dispatch
 
     public function mount()
     {
@@ -30,19 +30,20 @@ class PomodoroTimer extends Component
     {
         if (!$this->isRunning) {
             $this->isRunning = true;
-            $this->timerId = $this->dispatchBrowserEvent('start-timer', [
-                'duration' => $this->timeRemaining
-            ]);
+            
+            // En Livewire 3 usamos $this->dispatch directamente
+            $this->dispatch('start-timer', duration: $this->timeRemaining);
         }
     }
 
     public function pauseTimer()
     {
         $this->isRunning = false;
-        $this->dispatchBrowserEvent('pause-timer');
+        $this->dispatch('pause-timer');
     }
 
-    public function handleTimerFinished()
+    // Manejador de evento desde JavaScript
+    public function onTimerFinished()
     {
         $this->isRunning = false;
         $this->completedPomodoros++;
@@ -51,7 +52,7 @@ class PomodoroTimer extends Component
 
     public function playSound()
     {
-        $this->dispatchBrowserEvent('play-sound');
+        $this->dispatch('play-sound');
     }
 
     public function setInterval($minutes)
